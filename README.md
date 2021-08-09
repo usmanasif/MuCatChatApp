@@ -1,63 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+MuCat: Messanger app bases on websockets
+==============================================
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+------------------------------------------------------------------------
+Pre-requisite
+-----
+- phpenv / phpbrew
+- php -v 8.0
+- Mysql -v 14.14
+- nvm -v 0.38.0
+- npm -v 16.0
+- yarn
+- composer
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Phpenv**  is a tool to help simplify the management of multiple PHP custom build installations.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+It automatically creates and manages a php environment for your projects, as
+well as adds/removes packages from your `composer.json` as you
+install/uninstall packages. 
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+-----------------------------------------------------------------------
+Setup
+-----
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Login into your mysql shell:
 
-### Premium Partners
+    $ sudo su - & mysql 
+create database:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
+    mysql: create database mucat_chat;
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+------------------------------------------------------------------------
 
-## Code of Conduct
+Create .env file using content of .env.example and update credentials where required.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    $ touch .env & .env << .env.example
 
-## Security Vulnerabilities
+.env file changes
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    APP_NAME=MuCat
+    APP_ENV=local
+    APP_KEY=base64:U89v4s2Oec4Ta+bgrGFLNHmxxv+Ecw100kPsvApPRgU=
+    APP_DEBUG=true
+    APP_URL=http://localhost
+    
+    LOG_CHANNEL=stack
+    LOG_LEVEL=debug
+    
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=mucat_chat
+    DB_USERNAME=root
+    DB_PASSWORD=rootroot
+    
+    BROADCAST_DRIVER=redis
+    CACHE_DRIVER=file
+    FILESYSTEM_DRIVER=local
+    QUEUE_CONNECTION=redis
+    SESSION_DRIVER=database
+    SESSION_LIFETIME=120
+    
+    MEMCACHED_HOST=127.0.0.1
+    
+    REDIS_HOST=127.0.0.1
+    REDIS_PORT=6379
+    REDIS_PREFIX=""
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+you can generate your own key via 
+    $ php artisan key:generate
+
+
+Install all dependencies locked in composer.lock
+
+    $ composer install
+
+Install node dependencies
+
+    $ npm install
+
+Precompile assets
+
+    $ npm run dev
+
+for development 
+
+    $ npm run watch
+
+-------------------------------------------------------------------------
+
+Run Server
+----------
+
+Migrate database to load schema changes
+
+    $ php artisan migrate
+
+Run echo server
+
+    $ laravel-echo-server start
+
+Start laravel queue listener
+
+    $ php artisan queue:listen --daemon
+
+-------------------------------------------------------------------------
+Extras
+------
+
+To run test suite
+
+    $ php artisan test
+
+---------------------------------------------------------------------------
+
+Deployment commands
+-------------------
+
+Nginx with reverse proxy for laravel echo server
+
+````
+location /socket.io {
+	    proxy_pass http://domain:6001; #could be localhost if Echo and NginX are on the same box
+	    proxy_http_version 1.1;
+	    proxy_set_header Upgrade $http_upgrade;
+	    proxy_set_header Connection "Upgrade";
+	}
+
+````
+
+
+Performance Tweaking
+--------------------
+
+Mysql
+
+Enable queue cache
+    $ mysql > SET GLOBAL query_cache_size = 40000;
+
+Increase MAX Number of connection
+
+    $ nano $MYSQL_HOME/my.cnf
+
+    max_connections = 400
+
+
+**Switch Driver to RabitMQ**
+
+To increase concurrency and performance switch laravel queue and cache driver  to
+RabitMQ. RabitMQ support multiple nodes, load balancing and improved message broking.
+
+
+*Pending setup*
