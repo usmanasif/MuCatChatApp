@@ -13,3 +13,7 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+    let user_id={{ auth()->user()->id  }}
+</script>
