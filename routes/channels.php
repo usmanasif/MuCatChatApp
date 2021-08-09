@@ -20,7 +20,3 @@ Broadcast::channel('user-messanger-{id}-{receiver}', function ($user, $id, $rece
 Broadcast::channel('online-users', function ($user) {
    return $user;
 });
-
-//Broadcast::channel('App.Models.User.{id}.Messages', function ($user, $id) {
-//    return (int) $user->id == (int) $id;
-//});

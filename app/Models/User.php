@@ -25,20 +25,10 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use HasTimestamps;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name', 'email', 'password',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -46,27 +36,17 @@ class User extends Authenticatable
         'two_factor_secret',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
+
     protected $appends = [
         'profile_photo_url',
     ];
 
-    protected $dispatchesEvents = [
-
-    ];
+    protected $dispatchesEvents = [];
 
     public function sent_messages()
     {
@@ -89,7 +69,6 @@ class User extends Authenticatable
 
     public function all_messages($conversation_id)
     {
-
         return Message::where('conversation_id', $conversation_id)
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
@@ -101,33 +80,35 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
-    public function last_conversation_message($sender) {
+    public function last_conversation_message($sender)
+    {
         $messages = $this->conversation_messages($sender);
-        if(!$messages) {
+        if (!$messages) {
             return false;
         }
         return $messages->first();
     }
 
-    public function conversation_all_messages($sender) {
+    public function conversation_all_messages($sender)
+    {
         $messages = $this->conversation_messages($sender);
-        if(!$messages) {
+        if (!$messages) {
             return false;
         }
         return $messages->get();
     }
 
-    private function conversation_messages($sender) {
+    private function conversation_messages($sender)
+    {
         $array = [$sender, $this->id];
         sort($array);
         $salt = base64_encode(implode(',', $array));
         $conversation = Conversations::where('conversation_salt', $salt)->first();
 
-        if(!$conversation) {
+        if (!$conversation) {
             return false;
         }
         return Message::where('conversation_id', $conversation->id)->orderBy('created_at', 'asc');
     }
-
 
 }

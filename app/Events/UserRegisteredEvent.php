@@ -15,26 +15,13 @@ class UserRegisteredEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private $user;
-
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct($user)
     {
         $this->user = $user;
-        //
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
     public function broadcastOn()
     {
-//        return new PresenceChannel('online-users');
         $user_id = $this->user->id;
         return new PrivateChannel("user-messanger-".$user_id."-".'2');
     }

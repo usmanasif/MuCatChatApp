@@ -29,7 +29,7 @@ class ConversationController extends Controller
             $conversation = Conversations::create([
                 'sender_id' => $sender,
                 'receiver_id' => $receiver,
-                'conversation_salt'=> $salt
+                'conversation_salt' => $salt
             ]);
         }
         $messages = auth()->user()->all_messages($conversation->id);
@@ -61,13 +61,4 @@ class ConversationController extends Controller
         return redirect()->route('con_show', $conversation);
     }
 
-//    private function redirect_and_create($request, $sender) {
-//        $data = [
-//            'sender_id' => $sender->id,
-//            'receiver_id' => $request->receiver_id ??
-//
-//        ];
-//        return redirect()->route('con_store')->with($data);
-//
-//    }
 }
